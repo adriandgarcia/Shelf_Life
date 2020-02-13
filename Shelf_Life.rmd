@@ -66,19 +66,23 @@ Full_1 <- Full %>%
     Survival = ((Obsolete_Year - Inception_Year) * 12) + (Obsolete_Month - Inception_Month)
   )
 
+Full_1 %>% 
+ggplot(mapping = aes(x = `Obsolete Date`, y = Survival)) + 
+  geom_point() +
+  labs(y = "Months Alive", title = "Full Data") +
+  geom_smooth(method = 'lm', se = FALSE)
+
 ```
 
 ```{r overall}
 
 Overall <- Full_1 %>% 
   group_by(Obsolete_Year) %>% 
-  summarise(Count = n(),
-            Avg = mean(Survival),
-            Mdn = median(Survival))
-Overall %>% 
-ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
-  geom_col() +
-  labs(y = "Avg Months Alive", title = "Full Data")
+  summarise(Count_of_Funds = n(),
+            Average = mean(Survival),
+            Median = median(Survival))
+
+datatable(Overall)
 ```
 
 ```{r}
@@ -93,6 +97,8 @@ New %>%
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
   geom_col() +
 labs(y = "Avg Months Alive", title = "Share Class Created in 2000s")
+
+
 ```
 
 
@@ -107,7 +113,7 @@ Oldest <- Full_1 %>%
 Oldest %>% 
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
   geom_col() +
-    labs(y = "Avg Months Alive", title = "Oldest Class Classes")
+    labs(y = "Avg Months Alive", title = "Oldest Share Classes")
 ```
 
 ```{r institutional}
