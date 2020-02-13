@@ -77,7 +77,8 @@ Overall <- Full_1 %>%
             Mdn = median(Survival))
 Overall %>% 
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
-  geom_col()
+  geom_col() +
+  labs(y = "Avg Months Alive", title = "Full Data")
 ```
 
 ```{r}
@@ -90,7 +91,8 @@ New <- Full_1 %>%
   
 New %>% 
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
-  geom_col()
+  geom_col() +
+labs(y = "Avg Months Alive", title = "Share Class Created in 2000s")
 ```
 
 
@@ -104,7 +106,8 @@ Oldest <- Full_1 %>%
 
 Oldest %>% 
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
-  geom_col()
+  geom_col() +
+    labs(y = "Avg Months Alive", title = "Oldest Class Classes")
 ```
 
 ```{r institutional}
@@ -118,7 +121,8 @@ Institutional <- Full_1 %>%
 
 Institutional %>% 
 ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
-  geom_col()
+  geom_col() +
+  labs(y = "Avg Months Alive", title = "Inst. Shares")
 
 ```
 
@@ -136,5 +140,6 @@ Full_1 %>%
 ggplot(mapping = aes(x = `Obsolete Date`, y = Survival)) + 
   geom_point(mapping = aes(color = `Share Class Type`)) +
   facet_wrap(~ `Share Class Type`) +
-  geom_smooth(method = 'lm', se = FALSE)
+  geom_smooth(method = 'lm', se = FALSE) +
+  labs(y = "Months Alive", title = "By Share Class")
 ```
