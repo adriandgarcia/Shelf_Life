@@ -1,0 +1,109 @@
+---
+title: "Shelf_Life"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+author: "Adrian D. Garcia"
+date: "January 2020"
+output: html_document
+---
+
+```{r setup, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(DT)
+```
+
+```{r load, message=FALSE}
+
+a <- "ccccdccccdccdcccnndccccddddd"
+
+Data_1 <- read_csv("Morningstar_Obsolte_X_2008.csv",
+                   col_types = a) %>%
+  mutate(
+    `Obsolete Date` = ymd(`Obsolete Date`),
+    Obsolete_Year = year(`Obsolete Date`)
+  ) %>%
+  filter(Obsolete_Year < 2008)
+
+Data_2 <- read_csv("Morningstar_Obsolte_2008_2014.csv",
+                   col_types = a) %>%
+  mutate(
+    `Obsolete Date` = ymd(`Obsolete Date`),
+    Obsolete_Year = year(`Obsolete Date`)
+  ) %>%
+  filter(between(Obsolete_Year, 2008, 2013))
+
+Data_3 <- read_csv("Morningstar_Obsolte_2014_2019.csv",
+                   col_types = a) %>%
+  mutate(
+    `Obsolete Date` = ymd(`Obsolete Date`),
+    Obsolete_Year = year(`Obsolete Date`)
+  ) %>%
+  filter(between(Obsolete_Year, 2014, 2019))
+
+
+Full <- full_join(Data_1, Data_2) %>%
+  full_join(., Data_3)
+
+
+```
+
+
+```{r analysis, message = FALSE}
+
+Full_1 <- Full %>% 
+  mutate(
+    `Obsolete Date` = ymd(`Obsolete Date`),
+    `Inception Date` = ymd(`Inception Date`),
+    Obsolete_Year = year(`Obsolete Date`),
+    Obsolete_Month = month(`Obsolete Date`),
+    Inception_Year = year(`Inception Date`),
+    Inception_Month = month(`Inception Date`),
+    Survival = ((Obsolete_Year - Inception_Year) * 12) + (Obsolete_Month - Inception_Month)
+  )
+
+
+
+Overall <- Full_1 %>% 
+  group_by(Obsolete_Year) %>% 
+  summarise(Count = n(),
+            Avg = mean(Survival),
+            Mdn = median(Survival))
+
+
+Oldest <- Full_1 %>% 
+  filter(`Oldest Share Class` == "Yes") %>% 
+  group_by(Obsolete_Year) %>% 
+  summarise(Count = n(),
+            Avg = mean(Survival),
+            Mdn = median(Survival))
+
+
+Institutional <- Full_1 %>% 
+  filter(`Share Class Type` == "Inst") %>% 
+  group_by(Obsolete_Year) %>% 
+  summarise(Count = n(),
+            Avg = mean(Survival),
+            Mdn = median(Survival))
+
+Class <- Full_1 %>% 
+  group_by(Obsolete_Year, `Share Class Type`) %>% 
+  summarise(Count = n(),
+            Avg = mean(Survival),
+            Mdn = median(Survival))
+
+```
+
+
+```{r show}
+Full_1 %>% 
+  filter(Survival < 500) %>% 
+ggplot(mapping = aes(x = `Obsolete Date`, y = Survival, color = `Share Class Type`)) + 
+  geom_point() +
+  facet_wrap(~ `Share Class Type`) +
+  geom_smooth(method = 'lm', se = FALSE)
+```
