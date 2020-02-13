@@ -66,15 +66,35 @@ Full_1 <- Full %>%
     Survival = ((Obsolete_Year - Inception_Year) * 12) + (Obsolete_Month - Inception_Month)
   )
 
+```
 
+```{r overall}
 
 Overall <- Full_1 %>% 
   group_by(Obsolete_Year) %>% 
   summarise(Count = n(),
             Avg = mean(Survival),
             Mdn = median(Survival))
+Overall %>% 
+ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
+  geom_col()
+```
+
+```{r}
+New <- Full_1 %>% 
+  filter(Inception_Year >= 2000) %>% 
+  group_by(Obsolete_Year) %>% 
+  summarise(Count = n(),
+            Avg = mean(Survival),
+            Mdn = median(Survival))
+  
+New %>% 
+ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
+  geom_col()
+```
 
 
+```{r oldest_share}
 Oldest <- Full_1 %>% 
   filter(`Oldest Share Class` == "Yes") %>% 
   group_by(Obsolete_Year) %>% 
@@ -82,6 +102,12 @@ Oldest <- Full_1 %>%
             Avg = mean(Survival),
             Mdn = median(Survival))
 
+Oldest %>% 
+ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
+  geom_col()
+```
+
+```{r institutional}
 
 Institutional <- Full_1 %>% 
   filter(`Share Class Type` == "Inst") %>% 
@@ -90,20 +116,25 @@ Institutional <- Full_1 %>%
             Avg = mean(Survival),
             Mdn = median(Survival))
 
+Institutional %>% 
+ggplot(mapping = aes(x = `Obsolete_Year`, y = Avg)) + 
+  geom_col()
+
+```
+
+```{r class}
+
 Class <- Full_1 %>% 
   group_by(Obsolete_Year, `Share Class Type`) %>% 
   summarise(Count = n(),
             Avg = mean(Survival),
             Mdn = median(Survival))
 
-```
 
-
-```{r show}
 Full_1 %>% 
   filter(Survival < 500) %>% 
-ggplot(mapping = aes(x = `Obsolete Date`, y = Survival, color = `Share Class Type`)) + 
-  geom_point() +
+ggplot(mapping = aes(x = `Obsolete Date`, y = Survival)) + 
+  geom_point(mapping = aes(color = `Share Class Type`)) +
   facet_wrap(~ `Share Class Type`) +
   geom_smooth(method = 'lm', se = FALSE)
 ```
